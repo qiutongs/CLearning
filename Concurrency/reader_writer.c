@@ -21,12 +21,15 @@ int main()
     pthread_t readers[READERS];
     
     int i;
-    for (i=0;i<READERS;i++)
-    pthread_create(&readers[i], NULL, read_resource, NULL);
+    for (i = 0; i < READERS; i++) {
+        pthread_create(&readers[i], NULL, read_resource, NULL);
+    }
+    
     pthread_create(&writer, NULL, write_resource, NULL);
 
-    for (i=0;i<READERS;i++)
-    pthread_join(readers[i], NULL);
+    for (i = 0; i < READERS; i++) {
+        pthread_join(readers[i], NULL);
+    }
     
     pthread_join(writer, NULL);
     return 0;
@@ -34,7 +37,9 @@ int main()
 
 void* read_resource(void* arg){
     pthread_mutex_lock(&m);
-    while(resource_counter == -1) pthread_cond_wait(&read_ready, &m);
+    while(resource_counter == -1) {
+        pthread_cond_wait(&read_ready, &m);
+    }
     
     resource_counter++;
     pthread_mutex_unlock(&m);
@@ -54,8 +59,10 @@ void* read_resource(void* arg){
 
 void* write_resource(void* arg){
     pthread_mutex_lock(&m);
-    while(resource_counter != 0) pthread_cond_wait(&write_ready, &m);
-    
+    while(resource_counter != 0) {
+        pthread_cond_wait(&write_ready, &m);
+    }
+
     resource_counter = -1;
     pthread_mutex_unlock(&m);
     
